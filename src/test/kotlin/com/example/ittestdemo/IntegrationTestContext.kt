@@ -1,10 +1,10 @@
 package com.example.ittestdemo
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import com.mongodb.ConnectionString
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -21,6 +21,11 @@ open class IntegrationTestContext {
         @JvmStatic
         fun mongoDbProperties(registry: DynamicPropertyRegistry) {
             registry.add("MONGO_DB_CONNECTION_STRING") { container.connectionString + "/admin" }
+        }
+
+        fun mongoTemplate(): ReactiveMongoTemplate {
+            val mongoClientDatabaseFactory = SimpleReactiveMongoDatabaseFactory(ConnectionString(container.connectionString + "/admin"))
+            return ReactiveMongoTemplate(mongoClientDatabaseFactory)
         }
     }
 
