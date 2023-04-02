@@ -27,11 +27,11 @@ class ItTestDemoApplicationTests : IntegrationTestContext() {
     }
 
     @Test
-    fun test() {
+    fun testPersonSaving() {
         val savePersonResponseBody = webTestClient.post()
             .uri("/api/person")
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(Person(firstName = "Zoltan", lastName = "Farkas", gender = "male"))
+            .bodyValue(SavePersonRequestBody(firstName = "Zoltan", lastName = "Farkas", gender = "male"))
             .exchange()
             .expectStatus().isOk
             .expectBody().jsonPath("$.id").exists()
@@ -50,6 +50,6 @@ class ItTestDemoApplicationTests : IntegrationTestContext() {
             .jsonPath("$.gender").value(equalTo("male"))
     }
 
-    data class Person(val id: String = "", val firstName: String, val lastName: String, val gender: String)
+    data class SavePersonRequestBody(val firstName: String, val lastName: String, val gender: String)
     data class Id(val id: String)
 }
