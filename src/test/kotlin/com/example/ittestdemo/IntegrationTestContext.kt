@@ -28,5 +28,4 @@ open class IntegrationTestContext {
             return ReactiveMongoTemplate(mongoClientDatabaseFactory)
         }
     }
-
 }
