@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.BindMode
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -20,11 +21,17 @@ open class IntegrationTestContext {
         @DynamicPropertySource
         @JvmStatic
         fun mongoDbProperties(registry: DynamicPropertyRegistry) {
-            registry.add("MONGO_DB_CONNECTION_STRING") { container.connectionString + "/admin" }
+            registry.add("MONGO_DB_CONNECTION_STRING") { container.connectionString + "/personDB?authSource=admin" }
+            container.withClasspathResourceMapping(
+                "mongo-init.js",
+                "/docker-entrypoint-initdb.d/mongo-init.js",
+                BindMode.READ_ONLY
+            )
         }
 
         fun mongoTemplate(): ReactiveMongoTemplate {
-            val mongoClientDatabaseFactory = SimpleReactiveMongoDatabaseFactory(ConnectionString(container.connectionString + "/admin"))
+            val mongoClientDatabaseFactory =
+                SimpleReactiveMongoDatabaseFactory(ConnectionString(container.connectionString + "/personDB?authSource=admin"))
             return ReactiveMongoTemplate(mongoClientDatabaseFactory)
         }
     }
